@@ -1,0 +1,64 @@
+{
+  "description": "Lakehouse SQL schema for the Lakeshore Retail POC. Tables are loaded from CSVs into a Fabric lakehouse and queried via the SQL analytics endpoint through a Fabric Data Agent (NL2SQL).",
+  "tables": [
+    {
+      "name": "dimstore",
+      "description": "Dimension table for retail store locations.",
+      "columns": [
+        {"name": "StoreId", "type": "STRING", "description": "Primary key (e.g., S001)"},
+        {"name": "StoreName", "type": "STRING", "description": "Display name of the store"},
+        {"name": "Region", "type": "STRING", "description": "Geographic region (Northeast, Midwest, West)"},
+        {"name": "City", "type": "STRING"},
+        {"name": "State", "type": "STRING", "description": "Two-letter state code"},
+        {"name": "Manager", "type": "STRING", "description": "Store manager full name"},
+        {"name": "OpenDate", "type": "DATE", "description": "Date the store opened"}
+      ]
+    },
+    {
+      "name": "dimproducts",
+      "description": "Dimension table for products sold.",
+      "columns": [
+        {"name": "ProductId", "type": "STRING", "description": "Primary key (e.g., P001)"},
+        {"name": "ProductName", "type": "STRING"},
+        {"name": "Category", "type": "STRING", "description": "Ice Cream, Sorbet, or Italian Ice"},
+        {"name": "SubCategory", "type": "STRING", "description": "Premium or Standard"},
+        {"name": "UnitPrice", "type": "DOUBLE", "description": "Price per unit in USD"},
+        {"name": "Supplier", "type": "STRING"}
+      ]
+    },
+    {
+      "name": "factsales",
+      "description": "Fact table for individual sales transactions.",
+      "columns": [
+        {"name": "SaleId", "type": "STRING", "description": "Primary key (e.g., TXN001)"},
+        {"name": "StoreId", "type": "STRING", "description": "FK → dimstore.StoreId"},
+        {"name": "ProductId", "type": "STRING", "description": "FK → dimproducts.ProductId"},
+        {"name": "SaleDate", "type": "DATE"},
+        {"name": "Quantity", "type": "INT"},
+        {"name": "TotalAmount", "type": "DOUBLE", "description": "Total sale amount in USD"},
+        {"name": "Channel", "type": "STRING", "description": "In-Store or Online"}
+      ]
+    },
+    {
+      "name": "factreturns",
+      "description": "Fact table for product returns.",
+      "columns": [
+        {"name": "ReturnId", "type": "STRING", "description": "Primary key (e.g., R001)"},
+        {"name": "SaleId", "type": "STRING", "description": "FK → factsales.SaleId"},
+        {"name": "StoreId", "type": "STRING", "description": "FK → dimstore.StoreId"},
+        {"name": "ProductId", "type": "STRING", "description": "FK → dimproducts.ProductId"},
+        {"name": "ReturnDate", "type": "DATE"},
+        {"name": "Quantity", "type": "INT"},
+        {"name": "ReturnReason", "type": "STRING", "description": "Quality-Texture, Customer-Preference, or Damaged-Packaging"},
+        {"name": "RefundAmount", "type": "DOUBLE", "description": "Refund amount in USD"}
+      ]
+    }
+  ],
+  "joins": [
+    {"from": "factsales.StoreId", "to": "dimstore.StoreId"},
+    {"from": "factsales.ProductId", "to": "dimproducts.ProductId"},
+    {"from": "factreturns.StoreId", "to": "dimstore.StoreId"},
+    {"from": "factreturns.ProductId", "to": "dimproducts.ProductId"},
+    {"from": "factreturns.SaleId", "to": "factsales.SaleId"}
+  ]
+}

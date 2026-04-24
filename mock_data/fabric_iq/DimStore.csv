@@ -1,0 +1,6 @@
+StoreId,StoreName,Region,City,State,Manager,OpenDate
+S001,Downtown Flagship,Northeast,New York,NY,Sarah Chen,2020-03-15
+S002,Mall of Lakeshore,Midwest,Chicago,IL,James Wilson,2019-07-22
+S003,Suburban Plaza,Northeast,Boston,MA,Maria Garcia,2021-01-10
+S004,Coastal Drive,West,San Diego,CA,David Kim,2020-11-05
+S005,Mountain View,West,Denver,CO,Lisa Patel,2022-04-18

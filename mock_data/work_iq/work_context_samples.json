@@ -1,0 +1,48 @@
+{
+  "work_iq_responses": [
+    {
+      "query": "Who has dealt with product return spikes or quality issues recently?",
+      "results": [
+        {
+          "type": "email_thread",
+          "subject": "RE: Vanilla Bean returns at Downtown — getting worse",
+          "participants": [
+            "Sarah Chen <sarah.chen@lakeshoreretail.com>",
+            "Tom Richards <tom.richards@lakeshoreretail.com>",
+            "Lisa Patel <lisa.patel@lakeshoreretail.com>"
+          ],
+          "date": "2026-03-10",
+          "snippet": "Tom, we've had 6 more returns today for Vanilla Bean. All same complaint — grainy texture. This feels like the February cold chain issue again. Can you check if we got a new batch from the same distribution route? — Sarah"
+        },
+        {
+          "type": "sharepoint_list_item",
+          "site": "Quality Alerts",
+          "list": "Active Alerts",
+          "title": "Vanilla Bean NE Return Spike",
+          "created_by": "Tom Richards",
+          "date": "2026-03-11",
+          "snippet": "Pattern in Vanilla Bean returns concentrated in NE stores. Pulling batch records. @Maria Garcia — check Suburban Plaza numbers."
+        },
+        {
+          "type": "sharepoint_document",
+          "site": "Operations",
+          "library": "Meeting Notes",
+          "title": "Weekly Ops Sync — March 10, 2026.docx",
+          "modified_by": "Sarah Chen",
+          "date": "2026-03-10",
+          "snippet": "Tom flagged a potential quality issue with Vanilla Bean Classic at NE stores. Action: Tom to complete batch investigation by EOW. Sarah to track daily return counts at Downtown Flagship."
+        },
+        {
+          "type": "email_thread",
+          "subject": "FW: Lakeshore Dairy Co — Batch LOT-VB-2603 shipping confirmation",
+          "participants": [
+            "Procurement Team <procurement@lakeshoreretail.com>",
+            "Tom Richards <tom.richards@lakeshoreretail.com>"
+          ],
+          "date": "2026-03-02",
+          "snippet": "Confirming shipment of Batch LOT-VB-2603 to Northeast distribution center. Estimated delivery: March 3-4. Temperature-controlled transport via Route NE-7."
+        }
+      ]
+    }
+  ]
+}

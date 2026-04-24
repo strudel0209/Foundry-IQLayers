@@ -1,0 +1,30 @@
+{
+  "name": "IQ-Grounded AI Agents POC",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {}
+  },
+  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-azureresourcegroups"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "FOUNDRY_PROJECT_ENDPOINT": "${localEnv:FOUNDRY_PROJECT_ENDPOINT}",
+    "MODEL_DEPLOYMENT": "${localEnv:MODEL_DEPLOYMENT}",
+    "AZURE_AI_SEARCH_ENDPOINT": "${localEnv:AZURE_AI_SEARCH_ENDPOINT}",
+    "KNOWLEDGE_BASE_NAME": "${localEnv:KNOWLEDGE_BASE_NAME}",
+    "KB_MCP_CONNECTION_NAME": "${localEnv:KB_MCP_CONNECTION_NAME}",
+    "FABRIC_CONNECTION_NAME": "${localEnv:FABRIC_CONNECTION_NAME}",
+    "WORK_IQ_MAIL_MCP_URL": "${localEnv:WORK_IQ_MAIL_MCP_URL}",
+    "WORK_IQ_SHAREPOINT_MCP_URL": "${localEnv:WORK_IQ_SHAREPOINT_MCP_URL}"
+  }
+}

@@ -1,0 +1,14 @@
+# IQ-Grounded AI Agents POC — Enterprise Operations Advisor
+# Requires Python 3.11+
+
+# Foundry Agent Service SDK (GA 2.0)
+azure-ai-projects>=2.0.0
+
+# Azure authentication
+azure-identity>=1.19.0
+
+# Azure Resource Manager (for project connection creation)
+requests
+
+# Environment variable management
+python-dotenv

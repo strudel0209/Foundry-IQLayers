@@ -1,0 +1,9 @@
+ProductId,ProductName,Category,SubCategory,UnitPrice,Supplier
+P001,Vanilla Bean Classic,Ice Cream,Premium,5.99,Lakeshore Dairy Co
+P002,Chocolate Fudge Brownie,Ice Cream,Premium,6.49,Lakeshore Dairy Co
+P003,Strawberry Sorbet,Sorbet,Standard,4.99,FreshFruit Inc
+P004,Mint Chip Delight,Ice Cream,Standard,5.49,Lakeshore Dairy Co
+P005,Mango Passion,Sorbet,Premium,5.99,TropicalBlend Ltd
+P006,Cookie Dough Crunch,Ice Cream,Premium,6.99,Lakeshore Dairy Co
+P007,Lemon Italian Ice,Italian Ice,Standard,3.99,FreshFruit Inc
+P008,Rocky Road Adventure,Ice Cream,Standard,5.49,Lakeshore Dairy Co
