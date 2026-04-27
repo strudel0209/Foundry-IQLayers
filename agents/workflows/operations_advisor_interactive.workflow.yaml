@@ -1,0 +1,104 @@
+#
+# Operations Advisor (Interactive) — same fan-out as operations_advisor.workflow.yaml,
+# but the final synthesizer node is multi-turn: after the initial briefing the user
+# can ask follow-up "drill-down" questions and the synthesizer keeps responding,
+# reusing the same conversationId (so prior findings stay in context).
+#
+# The loop exits when the user types "done", "exit", or "stop".
+#
+# IMPORTANT: This workflow does NOT require any change to the four agents
+# (data-analyst, knowledge-agent, people-agent, operations-advisor). The
+# multi-turn behavior is implemented purely via the workflow's
+# `externalLoop.when` action and a Power Fx exit condition on
+# System.LastMessage.Text.
+#
+kind: Workflow
+trigger:
+  kind: OnConversationStart
+  id: operations_advisor_interactive
+  actions:
+
+    # Capture user question
+    - kind: SetVariable
+      id: capture_query
+      variable: Local.userQuery
+      value: =System.LastMessage.Text
+
+    # 1/3 Fabric IQ — structured data (single-turn)
+    - kind: InvokeAzureAgent
+      id: call_data_analyst
+      displayName: Data Analyst (Fabric IQ)
+      agent:
+        name: data-analyst
+      conversationId: =System.ConversationId
+      input:
+        messages: '="Analyze the following from our business data: " & Local.userQuery'
+      output:
+        responseObject: Local.dataFindings
+        autoSend: false
+
+    # 2/3 Foundry IQ — SOPs & policies (single-turn)
+    - kind: InvokeAzureAgent
+      id: call_knowledge_agent
+      displayName: Knowledge Agent (Foundry IQ)
+      agent:
+        name: knowledge-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: '="Find relevant SOPs, policies, and past incidents for: " & Local.userQuery'
+      output:
+        responseObject: Local.kbFindings
+        autoSend: false
+
+    # 3/3 Work IQ — people & context (single-turn)
+    - kind: InvokeAzureAgent
+      id: call_people_agent
+      displayName: People Agent (Work IQ)
+      agent:
+        name: people-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: '="Who has been involved in or knows about: " & Local.userQuery'
+      output:
+        responseObject: Local.peopleFindings
+        autoSend: false
+
+    # Synthesizer — MULTI-TURN.
+    # First pass: build the briefing from the three IQ findings.
+    # Subsequent passes (externalLoop): the workflow waits for the user's
+    # next message; that message becomes System.LastMessage.Text and the
+    # synthesizer answers it with full conversation context (the prior
+    # briefing + findings are already in the conversation thread because
+    # every node above shares the same conversationId).
+    #
+    # The loop exits when the user replies with "done", "exit", or "stop"
+    # (case-insensitive).
+    - kind: InvokeAzureAgent
+      id: synthesize
+      displayName: Synthesize unified briefing (multi-turn)
+      agent:
+        name: operations-advisor
+      conversationId: =System.ConversationId
+      input:
+        messages: >-
+          ="Original question: " & Local.userQuery
+          & "\n\n=== DATA ANALYST FINDINGS (Fabric IQ) ===\n" & Local.dataFindings
+          & "\n\n=== KNOWLEDGE BASE FINDINGS (Foundry IQ) ===\n" & Local.kbFindings
+          & "\n\n=== ORGANIZATIONAL CONTEXT (Work IQ) ===\n" & Local.peopleFindings
+          & "\n\nSynthesize these findings into a unified briefing with recommended actions. "
+          & "Cite the source layer (Fabric IQ / Foundry IQ / Work IQ) for each finding. "
+          & "After your briefing, invite the user to ask drill-down follow-up questions, "
+          & "or type 'done' to end the session."
+        externalLoop:
+          when: =Not(Lower(System.LastMessage.Text) in ["done", "exit", "stop"])
+      output:
+        responseObject: Local.briefing
+        autoSend: true
+
+    # Polite sign-off and explicit end of conversation.
+    - kind: SendActivity
+      id: signoff
+      activity: Thanks — closing the Operations Advisor session. Start a new chat any time.
+
+    - kind: EndConversation
+      id: all_done

@@ -1,0 +1,73 @@
+#
+# Operations Advisor — Foundry Workflow equivalent of main.py orchestrator.
+# Invokes the three IQ-layer specialists in sequence, then calls a synthesizer.
+#
+kind: Workflow
+trigger:
+  kind: OnConversationStart
+  id: operations_advisor
+  actions:
+
+    # Capture user question
+    - kind: SetVariable
+      id: capture_query
+      variable: Local.userQuery
+      value: =System.LastMessage.Text
+
+    # 1/3 Fabric IQ — structured data
+    - kind: InvokeAzureAgent
+      id: call_data_analyst
+      displayName: Data Analyst (Fabric IQ)
+      agent:
+        name: data-analyst
+      conversationId: =System.ConversationId
+      input:
+        messages: '="Analyze the following from our business data: " & Local.userQuery'
+      output:
+        responseObject: Local.dataFindings
+        autoSend: false
+
+    # 2/3 Foundry IQ — SOPs & policies
+    - kind: InvokeAzureAgent
+      id: call_knowledge_agent
+      displayName: Knowledge Agent (Foundry IQ)
+      agent:
+        name: knowledge-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: '="Find relevant SOPs, policies, and past incidents for: " & Local.userQuery'
+      output:
+        responseObject: Local.kbFindings
+        autoSend: false
+
+    # 3/3 Work IQ — people & context
+    - kind: InvokeAzureAgent
+      id: call_people_agent
+      displayName: People Agent (Work IQ)
+      agent:
+        name: people-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: '="Who has been involved in or knows about: " & Local.userQuery'
+      output:
+        responseObject: Local.peopleFindings
+        autoSend: false
+
+    # Synthesizer — must exist as an agent named "operations-synthesizer"
+    - kind: InvokeAzureAgent
+      id: synthesize
+      displayName: Synthesize unified briefing
+      agent:
+        name: operations-advisor
+      conversationId: =System.ConversationId
+      input:
+        messages: >-
+          ="Original question: " & Local.userQuery
+          & "\n\n=== DATA ANALYST FINDINGS (Fabric IQ) ===\n" & Local.dataFindings
+          & "\n\n=== KNOWLEDGE BASE FINDINGS (Foundry IQ) ===\n" & Local.kbFindings
+          & "\n\n=== ORGANIZATIONAL CONTEXT (Work IQ) ===\n" & Local.peopleFindings
+          & "\n\nSynthesize these findings into a unified briefing with recommended actions. "
+          & "Cite the source layer (Fabric IQ / Foundry IQ / Work IQ) for each finding."
+      output:
+        responseObject: Local.briefing
+        autoSend: true
